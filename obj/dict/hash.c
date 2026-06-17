@@ -1,0 +1,112 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hash.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/16 16:51:34 by tbelard           #+#    #+#             */
+/*   Updated: 2026/06/16 18:16:21 by tbelard          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "dict.h"
+
+static const uint32_t	*get_k(void)
+{
+	static const uint32_t	g_k[64] = {
+		0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf,
+		0x4787c62a, 0xa8304613, 0xfd469501, 0x698098d8, 0x8b44f7af,
+		0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e,
+		0x49b40821, 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+		0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8, 0x21e1cde6,
+		0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8,
+		0x676f02d9, 0x8d2a4c8a, 0xfffa3942, 0x8771f681, 0x6d9d6122,
+		0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+		0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039,
+		0xe6db99e5, 0x1fa27cf8, 0xc4ac5665, 0xf4292244, 0x432aff97,
+		0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d,
+		0x85845dd1, 0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+		0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
+
+	return (g_k);
+}
+
+static const uint32_t	*get_rot(void)
+{
+	static const uint32_t	g_rot[64] = {7, 12, 17, 22,  7, 12, 17, 22,
+				7, 12, 17, 22,  7, 12, 17, 22,
+				5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+				4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+				6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21};
+	
+	return (g_rot);
+}
+
+uint32_t rol(uint32_t x, uint32_t s)
+{
+	s &= 31;
+	return (x << s) | (x >> (32 - s));
+}
+
+uint32_t F(t_abcd var, uint32_t *key, int i)
+{
+	if (i < 16)
+		return ((var.b & var.c) | (~var.b & var.d)) + key[i];
+	if (i >= 16 && i <= 31)
+		return ((var.b & var.d) | (var.c & ~var.d)) + key[(5 * i) & 15];
+	if (i >= 32 && i <= 47)
+		return (var.b ^ var.c ^ var.d) + key[(3 * i) & 15];;
+	if (i >= 48)
+		return (var.c ^ (var.b | ~var.d)) + key[(7 * i) & 15];
+	return 0;
+}
+
+size_t hash(t_dict *self, const char *s)
+{
+	int i = 0;
+	int j = 0;
+	uint32_t hacher[4];
+	uint32_t buf_hash[16];
+
+	memset(buf_hash, 0, 16 * sizeof(uint32_t));
+	while (j < 14)
+	{
+		if (s[i])
+		{
+			j = i >> 2;
+			buf_hash[j] |= s[i] << ((i & 0b11) << 3);
+			i++;
+		}
+		else
+			buf_hash[++j] = 0;
+	}
+	buf_hash[14] = 0x80;
+	buf_hash[15] = i * 8;
+	return hash2(self, buf_hash, hacher);
+}
+
+
+
+size_t hash2(t_dict *self, uint32_t *key, uint32_t *hacher)
+{
+	int         i;
+	uint32_t    tmp;
+
+	i = -1;
+	while (++i < 64)
+	{
+		tmp = self->vars.c;
+		self->vars.c = self->vars.b;
+		self->vars.b += rol(
+			self->vars.a + F(
+				self->vars, key, i)
+				 + get_k()[i], get_rot()[i]);
+		self->vars.a = self->vars.d;
+		self->vars.d = tmp;
+	}
+	hacher[0] = self->vars.a;
+	hacher[1] = self->vars.b;
+	return (hacher[2] = self->vars.c,
+		 hacher[3] = self->vars.d, hacher[0] % self->cap);
+}
