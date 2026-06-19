@@ -136,138 +136,33 @@
         -   t_obj get(t_dict *self, char *key)
         // via une clé return l'object, si pas trouvé return un obj VNULL
 
-        -   void print_dict(t_dict *self)
-        print les index du buffer du dict même si vide et les list si trouvant
-        exemple:
-            0: 
-            1: 
-            2: [bchdfjgcfdhi]
-            3: [str_chose, str_beta]
-            4: 
-            5: 
-            6: [str_gamma]
-            7: [str_alpha]
-            8: 
-            9: 
-            10: 
-            11: 
+main de test:
 
-        -   void    copy_dict(t_dict *new_dict, t_dict self)
-        // init un nouveau dict avec les attributs d'un autre et copy proprement toutes les listes (nouvelles adresses)
+int main(void)
+{
+    t_arena *arena = new_arena();
 
-        -   void __destructeur__dict(t_dict *self)
-        // free: (toutes les list du buffer | tous les obj du tableau d'objets "items" | 
-        le buffer | les vars et const)
+    t_list *t = lst(arena, 2, int_new(0xff, arena), str_new("yolo", arena));
+    print_list(t);
 
-        -   void __init__dict(t_dict *self, t_dict *src, size_t len)
-        // peut soit init avec un dict à copier NULL ou non.
-        // calloc du buffer pour que tout soit à 0
-        // items n'est pas malloc
-        // et on init func et vars, const
+    pop(t, -1);
+    print_list(t);
 
-        LES VARS ET CONST peuvent rester des boites noires, elles viennent d'une formule mathématique qui hache bien.
+    append(t, float_new(42.1, arena), arena);
+    print_list(t);
+    
+    t_dict *dict = new_dict(NULL, 10, arena);
+    set(dict, arena, new_entry("jesaispo", int_new(42, arena), arena));
+    print_dict(dict);
+    
+    t_entry *x = get(dict, "jeaispo");
+    print_obj((t_obj *)x);
 
-        
-        la politique d'organisation est qu'on évite les malloc, on joue un max avec les tableaux,
-        on rend tout dynamique et on imbrique les éléments pour créer de la compléxité, donc 
-        abtraction et ensuite complexification. Moins de mots et plus de sens.
-
-        PROBLEME:
-            tout les buffers des objects sont des tableaux vers soit des lists soit des objects.
-            donc ils ne peuvent accueillir que ces derniers. il faut qu'il soit des pointeurs (void *)
-            pour accueillir n'importe quoi ce qui permet l'imbrication.
-
-            car là un dict ne peut actuellement store que [obj, obj..etc]
-            et rien d'autre.. alors qu'il devrait pouvoir store [(key_obj, val_obj), (key_obj, val_obj), etc..]
-            Mais la liste l'interdit car on a malloc un tableau de n * sizeof(obj) // n * 24oct
-            si c'était un tableau de pointeurs (n * 8 oct) void *.
-            
-            Une solution serait de passer de "typedef struct s_obj {
-                                                t_type type;
-                                                char *key;
-                                                union {
-                                                    int d;
-                                                    double f;
-                                                    void *p;
-                                                    char c;
-                                                    char *s;
-                                                } data;
-                                            } t_obj;"
-            à :
-                typedef struct s_obj {
-                    t_type type;
-                    void *data;
-                } t_obj;
-
-                ET l'object pourrait être un tuple, une list, un dict ou même une licorne s'il le souhaite.
-
-                donc dict pourrait toujours être une list d'object mais chaque object serait de type tuple 
-                et pointerait vers un tuple qui lui a une taille et un tableau d'object de type par exmple: (char *key et value_obj)
-                on peut donc naviguer de pointeur en pointeur (i += 8 en interne), mais on s'attend à aller vers des
-                tuples qui eux même pointent vers paire (k, v).
-
-
-        compliationa vec le flag "-finstrument-functions"
-
-        chaque frame = owner de ressources
-        tout ce qui est créé dans une frame est “attaché” à elle
-            à la sortie :
-            soit libéré
-            soit “retourné” vers la frame parent
-
-        list sur main global_frame
-        frame A
-        ├── obj1
-        ├── obj2
-        └── frame B
-                ├── obj3
-
-        TOUT les objects doivent etre append a la list
-        frame !
-
-        ensuite 2 choix, soit on return en faisant un 
-        append a la list parent, soit on decref //free
-
-        en fait on decref la frame actuelle et si des
-        obj ne sont pas append ailleurs alors leurs 
-        refcnt sera a 0 au lieu de 1 et donc free.
-
-        probleme faut sans globale ajouter la ref
-        vers la frame parent a la frame actuelle.
-
-
-        les frame peuvent etre considerer comme des arena.
-
-
-        Arena
-│
-├─ t_list
-│
-├─ tableau de pointeurs
-│   +------+------+------+
-│   |  *   |  *   |  *   |
-│   +------+------+------+
-│
-├─ t_int
-│
-├─ t_dict
-│
-└─ t_tuple
-
-et au resize
-
-Arena
-
-ancien tableau
-+----+----+----+----+
-| a  | b  | c  | d  |
-+----+----+----+----+
-
-nouveau tableau
-+----+----+----+----+----+----+----+----+
-| a  | b  | c  | d  |    |    |    |    |
-+----+----+----+----+----+----+----+----+
-                ^
-                |
-           self->items
-        
+    t_tuple *tuple = tup(arena, 2, str_new("steven", arena), int_new(48676453, arena));
+    print_tuple(tuple);
+    printf("count = %d\n", count(tuple, str_new("steven", arena), V_STRING));
+    printf("index = %d\n", __index__(tuple, str_new("steven", arena), V_STRING));
+    t_dict *dict_cpy = copy_dict(dict, arena);
+    print_dict(dict_cpy);
+    free_all(arena);
+}

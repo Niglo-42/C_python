@@ -6,11 +6,22 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:51:34 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/16 18:16:21 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/19 11:52:25 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "dict.h"
+
+static t_abcd	__init__vars(void)
+{
+	t_abcd	new;
+
+	new.a = 0x67452301;
+	new.b = 0xefcdab89;
+	new.c = 0x98badcfe;
+	new.d = 0x10325476;
+	return (new);
+}
 
 static const uint32_t	*get_k(void)
 {
@@ -34,41 +45,45 @@ static const uint32_t	*get_k(void)
 
 static const uint32_t	*get_rot(void)
 {
-	static const uint32_t	g_rot[64] = {7, 12, 17, 22,  7, 12, 17, 22,
-				7, 12, 17, 22,  7, 12, 17, 22,
-				5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-				4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-				6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21};
-	
+	static const uint32_t	g_rot[64] = {7, 12, 17, 22, 7, 12, 17, 22,
+		7, 12, 17, 22, 7, 12, 17, 22,
+		5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+		4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+		6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21};
+
 	return (g_rot);
 }
 
-uint32_t rol(uint32_t x, uint32_t s)
+static size_t	hash2(uint32_t *key, uint32_t *hacher)
 {
-	s &= 31;
-	return (x << s) | (x >> (32 - s));
+	int			i;
+	uint32_t	tmp;
+	t_abcd		var;
+
+	i = -1;
+	var = __init__vars();
+	while (++i < 64)
+	{
+		tmp = var.c;
+		var.c = var.b;
+		var.b += rol(var.a + f(var, key, i) + get_k()[i], get_rot()[i]);
+		var.a = var.d;
+		var.d = tmp;
+	}
+	hacher[0] = var.a;
+	hacher[1] = var.b;
+	return (hacher[2] = var.c, hacher[3] = var.d, hacher[0]);
 }
 
-uint32_t F(t_abcd var, uint32_t *key, int i)
+size_t	hash(t_dict *self, const char *s)
 {
-	if (i < 16)
-		return ((var.b & var.c) | (~var.b & var.d)) + key[i];
-	if (i >= 16 && i <= 31)
-		return ((var.b & var.d) | (var.c & ~var.d)) + key[(5 * i) & 15];
-	if (i >= 32 && i <= 47)
-		return (var.b ^ var.c ^ var.d) + key[(3 * i) & 15];;
-	if (i >= 48)
-		return (var.c ^ (var.b | ~var.d)) + key[(7 * i) & 15];
-	return 0;
-}
+	int			i;
+	int			j;
+	uint32_t	hacher[4];
+	uint32_t	buf_hash[16];
 
-size_t hash(t_dict *self, const char *s)
-{
-	int i = 0;
-	int j = 0;
-	uint32_t hacher[4];
-	uint32_t buf_hash[16];
-
+	i = 0;
+	j = 0;
 	memset(buf_hash, 0, 16 * sizeof(uint32_t));
 	while (j < 14)
 	{
@@ -83,30 +98,5 @@ size_t hash(t_dict *self, const char *s)
 	}
 	buf_hash[14] = 0x80;
 	buf_hash[15] = i * 8;
-	return hash2(self, buf_hash, hacher);
-}
-
-
-
-size_t hash2(t_dict *self, uint32_t *key, uint32_t *hacher)
-{
-	int         i;
-	uint32_t    tmp;
-
-	i = -1;
-	while (++i < 64)
-	{
-		tmp = self->vars.c;
-		self->vars.c = self->vars.b;
-		self->vars.b += rol(
-			self->vars.a + F(
-				self->vars, key, i)
-				 + get_k()[i], get_rot()[i]);
-		self->vars.a = self->vars.d;
-		self->vars.d = tmp;
-	}
-	hacher[0] = self->vars.a;
-	hacher[1] = self->vars.b;
-	return (hacher[2] = self->vars.c,
-		 hacher[3] = self->vars.d, hacher[0] % self->cap);
+	return (hash2(buf_hash, hacher) % self->cap);
 }

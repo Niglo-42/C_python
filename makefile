@@ -16,15 +16,18 @@ LIST_DIR = list
 
 SRCS = \
 	$(OBJ_DIR)/obj.c \
+	$(OBJ_DIR)/basic_funcs.c \
 	$(RUN)/arena.c \
 	$(OBJ_DIR)/$(GEN)/gen.c \
 	$(OBJ_DIR)/$(DICT_DIR)/dict.c \
 	$(OBJ_DIR)/$(DICT_DIR)/init_dict.c \
 	$(OBJ_DIR)/$(DICT_DIR)/hash.c \
+	$(OBJ_DIR)/$(DICT_DIR)/hash_methods.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple_count.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple_index.c \
-	$(OBJ_DIR)/$(LIST_DIR)/list.c
+	$(OBJ_DIR)/$(LIST_DIR)/list.c \
+	$(OBJ_DIR)/$(LIST_DIR)/list_methods.c
 
 OBJS = $(SRCS:.c=.o)
 
