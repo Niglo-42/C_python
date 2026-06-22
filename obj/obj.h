@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 15:14:07 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:45:53 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/22 16:21:57 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,5 +94,5 @@ t_obj	*chr_new(char c, t_arena *arena);
 t_obj	*int_new(int val, t_arena *arena);
 t_obj	*str_new(char *s, t_arena *arena);
 t_obj	*float_new(float val, t_arena *arena);
-
+size_t	ft_max(size_t a, size_t b);
 #endif

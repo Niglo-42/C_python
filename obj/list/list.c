@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:43:13 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 10:51:52 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/22 19:40:11 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,23 @@
 #include "../tuple/tuple.h"
 #include "../dict/dict.h"
 
-t_list	*list_new(size_t n, t_arena *arena, va_list data)
+void	append_index(t_list **self, t_obj *data, t_arena *arena, size_t index)
+{
+	if (!(*self))
+		return ;
+	if (index * 2 + 2 >= (*self)->cap)
+		*self = realloc_list(*self, arena, index * 2 + 2);
+	(*self)->size++;
+	(*self)->members[index] = data;
+}
+
+/*
+	we add * 2 + 2 for the children
+	*2 is where are the children and 
+	+ 2 is the place for both
+*/
+
+static t_list	*list_new(size_t n, t_arena *arena, va_list data)
 {
 	size_t	i;
 	t_list	*self;
@@ -49,7 +65,13 @@ void	print_list(t_list *self)
 	write(1, "[", 1);
 	while (i < self->size)
 	{
-		print_obj(self->members[i++]);
+		if (self->members[i] == NULL)
+		{
+			write(1, "NULL", 4);
+			i++;
+		}
+		else
+			print_obj(self->members[i++]);
 		write(1, ", ", 2 * (self->size > i));
 	}
 	write(1, "]\n", 2);

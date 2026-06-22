@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 11:36:05 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:37:11 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/22 16:21:35 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,11 @@ int	minmax(int a, int b)
 	if (a > b)
 		return (a - b);
 	return (b - a);
+}
+
+size_t	ft_max(size_t a, size_t b)
+{
+	if (a < b)
+		return (b);
+	return (a);
 }

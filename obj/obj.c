@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 15:09:43 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:38:10 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/19 16:08:06 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	print_obj(t_obj *obj)
 
 	if (!obj)
 	{
-		write(1, "NULL\n", 5);
+		write(1, "NULL", 4);
 		return ;
 	}
 	memset(s, 0, 13);

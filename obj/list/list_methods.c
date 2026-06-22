@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:47:05 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:56:10 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/22 19:40:18 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,32 @@ static int	apply_step(int *start, int step)
 	return (*start - step);
 }
 
-static t_list	*realloc_list(t_list *old, t_arena *arena)
+// void	append_index(t_list **self, t_obj *data, t_arena *arena, size_t index)
+// {
+// 	if (!(*self))
+// 		return ;
+
+// 	if (index >= (*self)->cap)
+// 		*self = realloc_list(*self, arena, index);
+// 	(*self)->members[index] = data;
+// }
+
+t_list	*realloc_list(t_list *old, t_arena *arena, size_t size)
 {
 	size_t	new_cap;
 	t_list	*new;
-	size_t	i;
 
-	new_cap = old->cap * 2;
+	if (!old)
+		return (NULL);
+	new_cap = old->cap;
+	while (size >= new_cap)
+		new_cap *= 2;
 	new = (t_list *)get_memory(
 			sizeof(t_list) + new_cap * sizeof(t_obj *), arena);
 	new->base = old->base;
-	new->size = old->size;
+	new->size = size;
 	new->cap = new_cap;
-	i = 0;
-	while (i < old->size)
-	{
-		new->members[i] = old->members[i];
-		i++;
-	}
+	memmove(new->members, old->members, old->size * sizeof(t_obj *));
 	return (new);
 }
 
@@ -90,6 +98,6 @@ void	append(t_list **self, t_obj *data, t_arena *arena)
 	if (!(*self))
 		return ;
 	if ((*self)->size >= (*self)->cap)
-		*self = realloc_list(*self, arena);
+		*self = realloc_list(*self, arena, 0);
 	(*self)->members[(*self)->size++] = data;
 }
