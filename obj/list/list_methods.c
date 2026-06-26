@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:47:05 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/22 19:40:18 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/25 11:32:03 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_list	*realloc_list(t_list *old, t_arena *arena, size_t size)
 	new->base = old->base;
 	new->size = size;
 	new->cap = new_cap;
-	memmove(new->members, old->members, old->size * sizeof(t_obj *));
+	ft_memcpy(new->members, old->members, old->size * sizeof(t_obj *));
 	return (new);
 }
 
@@ -70,7 +70,7 @@ t_list	*slice(t_list *self, int *range, t_arena *arena)
 	else if (start < end && end <= upper)
 		upper = end - 1 + range[3];
 	handle_error(self, start, end);
-	list = lst(arena, 0);
+	list = lst(arena, NULL, 0);
 	while (start >= end && start <= upper)
 		append(&list, (t_obj *)self->members[apply_step(&start, step)], arena);
 	return (list);
@@ -87,7 +87,7 @@ t_obj	*pop(t_list *self, int index)
 	if (index >= (int)self->size || self->size == 0 || index < 0)
 		return (display_error("Out_of_Range index: ", &index, 10), NULL);
 	res = self->members[index];
-	memmove(&self->members[index], &self->members[index + 1],
+	ft_memmove(&self->members[index], &self->members[index + 1],
 		(self->size - 1 - index) * sizeof(t_obj));
 	self->size--;
 	return (res);
@@ -95,9 +95,12 @@ t_obj	*pop(t_list *self, int index)
 
 void	append(t_list **self, t_obj *data, t_arena *arena)
 {
+	size_t	size;
+
+	size = (*self)->size;
 	if (!(*self))
 		return ;
-	if ((*self)->size >= (*self)->cap)
-		*self = realloc_list(*self, arena, 0);
+	if (size >= (*self)->cap)
+		*self = realloc_list(*self, arena, size);
 	(*self)->members[(*self)->size++] = data;
 }

@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:51:34 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:52:25 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 17:05:47 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static size_t	hash2(uint32_t *key, uint32_t *hacher)
 	return (hacher[2] = var.c, hacher[3] = var.d, hacher[0]);
 }
 
-size_t	hash(t_dict *self, const char *s)
+size_t	hash(size_t cap, const char *s)
 {
 	int			i;
 	int			j;
@@ -98,5 +98,5 @@ size_t	hash(t_dict *self, const char *s)
 	}
 	buf_hash[14] = 0x80;
 	buf_hash[15] = i * 8;
-	return (hash2(buf_hash, hacher) % self->cap);
+	return (hash2(buf_hash, hacher) % cap);
 }

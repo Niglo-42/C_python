@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 15:09:43 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 16:08:06 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 16:22:42 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ t_obj	*str_new(char *s, t_arena *arena)
 	new->base.refcnt = 0;
 	new->base.type = V_STRING;
 	new->size = size;
-	memmove(new->s, s, size + 1);
+	ft_memmove(new->s, s, size + 1);
 	return ((t_obj *)new);
 }
 

@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:34:42 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 10:40:55 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/25 16:01:44 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ typedef struct s_tuple
 {
 	t_obj	base;
 	size_t	size;
-	t_obj	*members[];
+	t_obj	**members;
 }	t_tuple;
 
 int		count(t_tuple *self, t_obj *elem, t_type type);
@@ -36,4 +36,5 @@ int		count_float(t_tuple *self, t_obj *elem, t_type type);
 
 t_tuple	*tup(t_arena *arena, int n, ...);
 void	print_tuple(t_tuple *self);
+t_obj	*get_at_index(t_tuple *self, int index);
 #endif

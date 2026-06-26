@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 11:01:50 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:43:00 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 22:14:55 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	set(t_dict *self, t_entry *entry)
 
 	if (self->size >= self->cap)
 		return ;
-	index = hash(self, entry->key);
+	index = hash(self->cap, entry->key);
 	while (self->tab_entry[index % self->cap] != NULL)
 	{
 		index++;
@@ -45,14 +45,18 @@ t_entry	*get(t_dict *self, const char *key)
 {
 	t_entry	*entry;
 	size_t	index;
+	size_t	low;
 
-	index = hash(self, key);
-	while (self->tab_entry[index % self->cap])
+	index = hash(self->cap, key);
+	low = 0;
+	while (low < self->size)
 	{
 		entry = self->tab_entry[index % self->cap];
-		if (strcmp(entry->key, key) == 0)
-			return (entry);
+		if (entry)
+			if (strcmp(entry->key, key) == 0)
+				return (entry);
 		index++;
+		low++;
 	}
 	return (NULL);
 }

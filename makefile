@@ -1,7 +1,7 @@
 NAME = libobj.a
 
-CC = gcc
-CFLAGS = -g3 -Wall -Wextra -Werror
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 AR = ar rcs
 RM = rm -f
@@ -17,6 +17,8 @@ LIST_DIR = list
 SRCS = \
 	$(OBJ_DIR)/obj.c \
 	$(OBJ_DIR)/basic_funcs.c \
+	$(OBJ_DIR)/basic2.c \
+	$(OBJ_DIR)/basic3.c \
 	$(RUN)/arena.c \
 	$(OBJ_DIR)/$(GEN)/gen.c \
 	$(OBJ_DIR)/$(DICT_DIR)/dict.c \
@@ -24,6 +26,7 @@ SRCS = \
 	$(OBJ_DIR)/$(DICT_DIR)/hash.c \
 	$(OBJ_DIR)/$(DICT_DIR)/hash_methods.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple.c \
+	$(OBJ_DIR)/$(TUPLE_DIR)/tuple_pop.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple_count.c \
 	$(OBJ_DIR)/$(TUPLE_DIR)/tuple_index.c \
 	$(OBJ_DIR)/$(LIST_DIR)/list.c \

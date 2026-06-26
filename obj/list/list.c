@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:43:13 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/22 19:40:11 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 16:13:42 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 #include "../tuple/tuple.h"
 #include "../dict/dict.h"
 
-void	append_index(t_list **self, t_obj *data, t_arena *arena, size_t index)
-{
-	if (!(*self))
-		return ;
-	if (index * 2 + 2 >= (*self)->cap)
-		*self = realloc_list(*self, arena, index * 2 + 2);
-	(*self)->size++;
-	(*self)->members[index] = data;
-}
+// void	append_index(t_list **self, t_obj *data, t_arena *arena, size_t index)
+// {
+// 	if (!(*self))
+// 		return ;
+// 	if (index * 2 + 2 >= (*self)->cap)
+// 		*self = realloc_list(*self, arena, index * 2 + 2);
+// 	(*self)->size++;
+// 	(*self)->members[index] = data;
+// }
 
 /*
 	we add * 2 + 2 for the children
@@ -30,7 +30,11 @@ void	append_index(t_list **self, t_obj *data, t_arena *arena, size_t index)
 	+ 2 is the place for both
 */
 
-static t_list	*list_new(size_t n, t_arena *arena, va_list data)
+static t_list	*list_new(
+	size_t n,
+	t_arena *arena,
+	va_list data,
+	t_obj *_val_default)
 {
 	size_t	i;
 	t_list	*self;
@@ -44,17 +48,21 @@ static t_list	*list_new(size_t n, t_arena *arena, va_list data)
 	self->size = n;
 	self->base.refcnt = 0;
 	self->base.type = V_LIST;
-	while (++i < n)
-		self->members[i] = va_arg(data, t_obj *);
+	if (!_val_default)
+		while (++i < n)
+			self->members[i] = va_arg(data, t_obj *);
+	else
+		wrap_default(n, _val_default, self);
+	va_end(data);
 	return (self);
 }
 
-t_list	*lst(t_arena *arena, int n, ...)
+t_list	*lst(t_arena *arena, t_obj *_val_default, int n, ...)
 {
 	va_list	lst;
 
 	va_start(lst, n);
-	return (list_new(n, arena, lst));
+	return (list_new(n, arena, lst, _val_default));
 }
 
 void	print_list(t_list *self)
@@ -62,6 +70,8 @@ void	print_list(t_list *self)
 	size_t	i;
 
 	i = 0;
+	if (!self)
+		return ;
 	write(1, "[", 1);
 	while (i < self->size)
 	{

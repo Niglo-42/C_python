@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 11:36:05 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/22 16:21:35 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 16:26:15 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,12 @@ void	display_error(char *s, int *value, size_t base)
 	char	nb[13];
 	t_error	error;
 
-	memcpy(error.e, s, strlen(s) + 1);
+	ft_memcpy(error.e, s, strlen(s) + 1);
 	if (value)
 	{
-		strcat(error.e, ft_itoa(nb, *(long *)value, base));
-		strcat(error.e, "\n");
+		ft_itoa(nb, *(long *)value, base);
+		ft_memcpy(((void *)error.e + strlen(s)), nb, strlen(nb) + 1);
+		ft_memcpy(((void *)error.e + strlen(error.e)), "\n", 3);
 	}
 	write(1, error.e, strlen(error.e));
 }
@@ -63,4 +64,17 @@ size_t	ft_max(size_t a, size_t b)
 	if (a < b)
 		return (b);
 	return (a);
+}
+
+t_obj	*new_node(int val, t_arena *arena)
+{
+	t_node	*new;
+
+	new = (t_node *)get_memory(sizeof(t_node), arena);
+	new->integer.base.type = V_NODE;
+	new->integer.val = val;
+	new->right = NULL;
+	new->left = NULL;
+	new->red = 0;
+	return ((t_obj *)new);
 }

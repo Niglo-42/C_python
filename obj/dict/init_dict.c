@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 11:01:59 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:51:38 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 16:12:14 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_dict	*new_dict(t_dict *src, size_t len, t_arena *arena)
 	{
 		self->size = src->size;
 		self->base.type = src->base.type;
-		memcpy(self->tab_entry, src->tab_entry, len * sizeof(t_entry *));
+		ft_memcpy(self->tab_entry, src->tab_entry, len * sizeof(t_entry *));
 	}
 	self->cap = len;
 	return (self);
@@ -47,6 +47,8 @@ void	print_dict(t_dict *self)
 	t_entry	*entry;
 
 	i = 0;
+	if (!self)
+		return ;
 	write(1, "{", 1);
 	while (i < self->cap)
 	{

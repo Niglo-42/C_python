@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 11:01:53 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 11:52:03 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/24 17:06:09 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void		print_dict(t_dict *self);
 ///// hash functions
 uint32_t	rol(uint32_t x, uint32_t s);
 uint32_t	f(t_abcd var, uint32_t *key, int i);
-size_t		hash(t_dict *self, const char *s);
+size_t		hash(size_t cap, const char *s);
 
 //////////dict
 

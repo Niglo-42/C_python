@@ -6,7 +6,7 @@
 /*   By: tbelard <tbelard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 10:34:24 by tbelard           #+#    #+#             */
-/*   Updated: 2026/06/19 10:41:26 by tbelard          ###   ########.fr       */
+/*   Updated: 2026/06/25 15:42:56 by tbelard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,15 @@ t_tuple	*tuple_new(size_t n, t_arena *arena, va_list data)
 	t_tuple	*new;
 
 	i = -1;
-	new = (t_tuple *)get_memory(sizeof(t_tuple) + n * sizeof(void *), arena);
+	new = (t_tuple *)get_memory(sizeof(t_tuple), arena);
+	new->members = get_memory(n * sizeof(void *), arena);
 	if (!new)
 		return (NULL);
 	new->size = n;
 	new->base.refcnt = 0;
 	new->base.type = V_TUP;
+	if (!data)
+		return (new);
 	while (++i < n)
 	{
 		new->members[i] = va_arg(data, t_obj *);
@@ -68,6 +71,8 @@ void	print_tuple(t_tuple *self)
 	size_t	i;
 
 	i = 0;
+	if (!self)
+		return ;
 	write(1, "(", 1);
 	while (i < self->size)
 	{
